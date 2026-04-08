@@ -1,0 +1,1 @@
+export const weeks = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
