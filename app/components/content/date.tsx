@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/app/lib/utils";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 
 export const Dates = () => {
     // Get the current date
@@ -67,11 +67,12 @@ export const Dates = () => {
                     <div
                         key={i}
                         className={cn(
-                            "calender-date flex justify-center items-center nth-[7n-1]:text-blue-500 nth-[7n]:text-blue-500 px-2",
-                            isToday && "bg-zinc-600 rounded",
-                            isCurrentMonth ? "text-white hover:bg-zinc-800 hover:rounded" : "text-gray-500",
-                            isSelected && "bg-blue-500 rounded text-white",
-                            inRange && "bg-blue-300 rounded text-white"
+                            "calender-date flex h-8 w-8 items-center justify-center place-self-center rounded-[4px] text-[12px] font-medium transition-all duration-150 select-none sm:h-9 sm:w-9",
+                            "nth-[7n-1]:text-[#1a9fd8] nth-[7n]:text-[#1a9fd8]",
+                            isToday && "border border-zinc-500 rounded-[6px]",
+                            isCurrentMonth ? "text-zinc-800 hover:rounded-[4px] hover:bg-zinc-100" : "text-zinc-300",
+                            isSelected && "rounded-[6px] bg-[#1a9fd8] text-white hover:bg-[#1a9fd8]",
+                            inRange && "rounded-[4px] bg-[#d9f1fb] text-[#0778ad]"
                         )}
                         onClick={() => handleClick(date)}
                     >

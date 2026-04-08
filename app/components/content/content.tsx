@@ -9,23 +9,23 @@ export const Content = () => {
     const isWeekend = (day: string) => {
         return day === "Sat" || day === "Sun";
     }
+
     return (
-        <div className="h-1/2 w-full flex justify-end px-10 py-5">
-            <div
-                className="grid grid-cols-[repeat(7,1fr)] text-center font-mono gap-5"
-            >
+        <div className="grid gap-4">
+            <div className="grid grid-cols-[repeat(7,1fr)] gap-1 text-center font-mono">
                 {/* Days of the week */}
                 {weeks.map((week, index) => (
                     <div
                         key={index}
                         className={cn(
-                            "text-lg",
-                            isWeekend(week) && "text-blue-500"
+                            "pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-700",
+                            isWeekend(week) && "text-[#1a9fd8]"
                         )}
                     >
                         {week}
                     </div>
                 ))}
+
                 {/* Dates */}
                 <Dates />
             </div>
