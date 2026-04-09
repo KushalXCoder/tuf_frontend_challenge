@@ -6,7 +6,7 @@ import { useDateStore } from "@/app/store/date.store";
 
 export const Dates = () => {
     // Access the setDate function from the date store
-    const { month, year, setDate, setRange, clearRange } = useDateStore();
+    const { month, year, markersByDate, setDate, setRange, clearRange } = useDateStore();
 
     // Get the current date
     const today = new Date();
@@ -75,14 +75,17 @@ export const Dates = () => {
             {Array.from({ length: arrayLength }, (_,i) => {
                 const isCurrentMonth = i >= firstDayOffset;
                 const date = isCurrentMonth ? i - firstDayOffset + 1 : prevMonthDays - firstDayOffset + i + 1;
-                const isSelected = selectedDates.includes(date);
+                const isSelected = isCurrentMonth && selectedDates.includes(date);
                 const isWeekendColumn = i % 7 === 5 || i % 7 === 6;
+                const markerKey = `${year}-${month + 1}-${date}`;
+                const marker = isCurrentMonth ? markersByDate[markerKey] : undefined;
                 const isToday =
                     currentDate === date &&
                     isCurrentMonth &&
                     today.getMonth() === month &&
                     today.getFullYear() === year;
                 const inRange =
+                    isCurrentMonth &&
                     selectedDates.length === 2 &&
                     date > Math.min(selectedDates[0], selectedDates[1]) &&
                     date < Math.max(selectedDates[0], selectedDates[1]);
@@ -90,16 +93,29 @@ export const Dates = () => {
                     <div
                         key={i}
                         className={cn(
-                            "calender-date flex h-8 w-8 items-center justify-center place-self-center rounded-sm text-[12px] font-medium transition-all duration-150 select-none sm:h-9 sm:w-9",
+                            "calender-date group relative flex h-8 w-8 items-center justify-center place-self-center rounded-sm text-[12px] font-medium transition-all duration-150 select-none sm:h-9 sm:w-9",
                             isWeekendColumn && "text-[#1a9fd8]",
-                            isToday && "border border-zinc-500 rounded-md",
-                            isCurrentMonth ? "text-zinc-800 hover:rounded-sm hover:bg-zinc-100" : "text-zinc-300",
+                            isToday && "ring-1 ring-inset ring-zinc-500 rounded-sm",
+                            isCurrentMonth ? "text-zinc-800 hover:rounded-sm hover:bg-zinc-100" : "pointer-events-none text-zinc-300",
                             isSelected && "rounded-md bg-[#1a9fd8] text-white hover:bg-[#1a9fd8]",
                             inRange && "rounded-sm bg-[#d9f1fb] text-[#0778ad]"
                         )}
-                        onClick={() => handleClick(date)}
+                        onClick={() => {
+                            if (!isCurrentMonth) return;
+                            handleClick(date);
+                        }}
                     >
                         {date}
+                        {marker && (
+                            <>
+                                <span className="pointer-events-none absolute bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] leading-none text-zinc-700">
+                                    {marker.symbol === "dot" ? "●" : marker.symbol === "star" ? "★" : "⚑"}
+                                </span>
+                                <span className="pointer-events-none absolute -top-6 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-white md:group-hover:block">
+                                    {marker.title}
+                                </span>
+                            </>
+                        )}
                     </div>
                 )
             })}
