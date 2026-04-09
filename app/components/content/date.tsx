@@ -6,7 +6,7 @@ import { useDateStore } from "@/app/store/date.store";
 
 export const Dates = () => {
     // Access the setDate function from the date store
-    const { month, year, setDate } = useDateStore();
+    const { month, year, setDate, setRange, clearRange } = useDateStore();
 
     // Get the current date
     const today = new Date();
@@ -27,15 +27,23 @@ export const Dates = () => {
         if(selectedDates.length <= 0) return;
 
         const viewClick = (e: MouseEvent) => {
-            if(!(e.target as HTMLElement).classList.contains("calender-date")) {
+            const target = e.target as HTMLElement;
+
+            // Keep range selected while interacting with notes or explicitly preserved UI.
+            if (target.closest("[data-preserve-range='true']")) {
+                return;
+            }
+
+            if(!target.classList.contains("calender-date")) {
                 setSelectedDates([]);
                 setDate(currentDate);
+                clearRange();
             }
         }
 
         window.addEventListener("click", viewClick);
         return () => window.removeEventListener("click", viewClick);
-    });
+    }, [selectedDates, setDate, clearRange, currentDate]);
 
     // Handle selecting two dates
     const handleClick = (date: number) => {
@@ -44,9 +52,18 @@ export const Dates = () => {
             // If only one date is selected, store to zustand
             if(prev.length === 0) {
                 setDate(date);
+                setRange(date, null);
+            }
+            if(prev.length === 1) {
+                const start = Math.min(prev[0], date);
+                const end = Math.max(prev[0], date);
+                setRange(start, end);
             }
             // If, date is selected for the third time, replace with the second date
             if(prev.length === 2) {
+                const start = Math.min(prev[0], date);
+                const end = Math.max(prev[0], date);
+                setRange(start, end);
                 return [prev[0], date];
             }
             return [...prev, date];
@@ -65,7 +82,6 @@ export const Dates = () => {
                     isCurrentMonth &&
                     today.getMonth() === month &&
                     today.getFullYear() === year;
-
                 const inRange =
                     selectedDates.length === 2 &&
                     date > Math.min(selectedDates[0], selectedDates[1]) &&
