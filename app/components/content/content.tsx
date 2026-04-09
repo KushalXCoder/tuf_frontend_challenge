@@ -3,6 +3,7 @@
 import { weeks } from "@/app/lib/constants";
 import { cn } from "@/app/lib/utils";
 import { Dates } from "./date";
+import { Notes } from "./notes";
 
 export const Content = () => {
     // Check if the day is a weekend
@@ -25,10 +26,11 @@ export const Content = () => {
                         {week}
                     </div>
                 ))}
-
                 {/* Dates */}
                 <Dates />
             </div>
+            {/* Notes */}
+            <Notes />
         </div>
     )
 }
