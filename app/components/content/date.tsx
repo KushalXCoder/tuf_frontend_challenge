@@ -2,23 +2,23 @@
 
 import { cn } from "@/app/lib/utils";
 import React, { useEffect } from "react";
+import { useDateStore } from "@/app/store/date.store";
 
 export const Dates = () => {
+    // Access the setDate function from the date store
+    const { month, year, setDate } = useDateStore();
+
     // Get the current date
-    const currentDate = new Date().getDate();
+    const today = new Date();
+    const currentDate = today.getDate();
 
-    // Find the first day of the month
-    const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay();
+    // Convert JS weekday (Sun=0..Sat=6) into Monday-first index (Mon=0..Sun=6)
+    const firstDayOffset = (new Date(year, month, 1).getDay() + 6) % 7;
+    const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
+    const prevMonthDays = new Date(year, month, 0).getDate();
 
-    // Check if it a month has 30 or 31 days
-    const daysInMonth = (type: string) => {
-        const x = type === "current" ? 1 : 0;
-        return new Date(new Date().getFullYear(), new Date().getMonth() + x, 0).getDate();
-    }
-
-    // Compute the array length here, keeping the JSX cleaner
-    const arrayLength = daysInMonth("current") + firstDay;
-
+    // Render only visible cells for current month + leading previous-month fillers
+    const arrayLength = daysInCurrentMonth + firstDayOffset;
     
     const [selectedDates, setSelectedDates] = React.useState<number[]>([]);
 
@@ -29,6 +29,7 @@ export const Dates = () => {
         const viewClick = (e: MouseEvent) => {
             if(!(e.target as HTMLElement).classList.contains("calender-date")) {
                 setSelectedDates([]);
+                setDate(currentDate);
             }
         }
 
@@ -40,6 +41,10 @@ export const Dates = () => {
     const handleClick = (date: number) => {
         // Add dates on click
         setSelectedDates((prev) => {
+            // If only one date is selected, store to zustand
+            if(prev.length === 0) {
+                setDate(date);
+            }
             // If, date is selected for the third time, replace with the second date
             if(prev.length === 2) {
                 return [prev[0], date];
@@ -51,13 +56,15 @@ export const Dates = () => {
     return (
         <>
             {Array.from({ length: arrayLength }, (_,i) => {
-                // Calculate the date
-                const date = i - firstDay + 2;
-                const prevMonthDays = daysInMonth("previous");
-
-                const isCurrentMonth = i + 1 >= firstDay;
+                const isCurrentMonth = i >= firstDayOffset;
+                const date = isCurrentMonth ? i - firstDayOffset + 1 : prevMonthDays - firstDayOffset + i + 1;
                 const isSelected = selectedDates.includes(date);
-                const isToday = currentDate === date;
+                const isWeekendColumn = i % 7 === 5 || i % 7 === 6;
+                const isToday =
+                    currentDate === date &&
+                    isCurrentMonth &&
+                    today.getMonth() === month &&
+                    today.getFullYear() === year;
 
                 const inRange =
                     selectedDates.length === 2 &&
@@ -67,22 +74,16 @@ export const Dates = () => {
                     <div
                         key={i}
                         className={cn(
-                            "calender-date flex h-8 w-8 items-center justify-center place-self-center rounded-[4px] text-[12px] font-medium transition-all duration-150 select-none sm:h-9 sm:w-9",
-                            "nth-[7n-1]:text-[#1a9fd8] nth-[7n]:text-[#1a9fd8]",
-                            isToday && "border border-zinc-500 rounded-[6px]",
-                            isCurrentMonth ? "text-zinc-800 hover:rounded-[4px] hover:bg-zinc-100" : "text-zinc-300",
-                            isSelected && "rounded-[6px] bg-[#1a9fd8] text-white hover:bg-[#1a9fd8]",
-                            inRange && "rounded-[4px] bg-[#d9f1fb] text-[#0778ad]"
+                            "calender-date flex h-8 w-8 items-center justify-center place-self-center rounded-sm text-[12px] font-medium transition-all duration-150 select-none sm:h-9 sm:w-9",
+                            isWeekendColumn && "text-[#1a9fd8]",
+                            isToday && "border border-zinc-500 rounded-md",
+                            isCurrentMonth ? "text-zinc-800 hover:rounded-sm hover:bg-zinc-100" : "text-zinc-300",
+                            isSelected && "rounded-md bg-[#1a9fd8] text-white hover:bg-[#1a9fd8]",
+                            inRange && "rounded-sm bg-[#d9f1fb] text-[#0778ad]"
                         )}
                         onClick={() => handleClick(date)}
                     >
-                        {i+1 >= firstDay ? (
-                            // This month's date
-                            date
-                            ) : (
-                            // Previous month's date
-                            prevMonthDays - firstDay + i + 2
-                        )}
+                        {date}
                     </div>
                 )
             })}
