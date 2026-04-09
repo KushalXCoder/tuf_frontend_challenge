@@ -23,3 +23,8 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
 }
+
+input,
+textarea {
+  caret-color: #374151;
+}
