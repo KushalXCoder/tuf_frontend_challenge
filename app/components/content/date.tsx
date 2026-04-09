@@ -97,7 +97,7 @@ export const Dates = () => {
                             isWeekendColumn && "text-[#1a9fd8]",
                             isToday && "ring-1 ring-inset ring-zinc-500 rounded-sm",
                             isCurrentMonth ? "text-zinc-800 hover:rounded-sm hover:bg-zinc-100" : "pointer-events-none text-zinc-300",
-                            isSelected && "rounded-md bg-[#1a9fd8] text-white hover:bg-[#1a9fd8]",
+                            isSelected && "rounded-sm bg-[#1a9fd8] text-white hover:bg-[#1a9fd8]",
                             inRange && "rounded-sm bg-[#d9f1fb] text-[#0778ad]"
                         )}
                         onClick={() => {
@@ -108,10 +108,11 @@ export const Dates = () => {
                         {date}
                         {marker && (
                             <>
-                                <span className="pointer-events-none absolute bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] leading-none text-zinc-700">
+                                <span className="pointer-events-none absolute right-0.5 top-0.5 text-[7px] leading-none text-zinc-700">
                                     {marker.symbol === "dot" ? "●" : marker.symbol === "star" ? "★" : "⚑"}
                                 </span>
-                                <span className="pointer-events-none absolute -top-6 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-white md:group-hover:block">
+
+                                <span className="pointer-events-none absolute -top-7 left-1/2 z-20 hidden -translate-x-1/2 whitespace-nowrap rounded-sm bg-sky-500 px-1.5 py-0.5 text-[10px] font-medium text-white md:group-hover:block">
                                     {marker.title}
                                 </span>
                             </>
